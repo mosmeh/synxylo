@@ -1,0 +1,234 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background-color: #779;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    height: 800px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Open Sans';
+}
+
+h1 {
+    color: #eee;
+    text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.26);
+}
+
+.key-container {
+    touch-action: none;
+    margin: 0 auto;
+    height: 100%;
+    width: 621px;
+    min-width: 621px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.key-container .top-row {
+    display: flex;
+    position: relative;
+    z-index: 2;
+}
+.key-container .top-row .key-group {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    top: 52px;
+}
+.key-container .top-row .key-group.group-of-two {
+    width: 60px;
+}
+.key-container .top-row .key-group.group-of-three {
+    width: 93px;
+}
+.key-container .top-row .key-group.group-1 {
+    margin-left: 17px;
+}
+.key-container .top-row .key-group.group-2 {
+    margin-left: 36px;
+}
+.key-container .top-row .key-group.group-3 {
+    margin-left: 42px;
+}
+.key-container .top-row .key-group.group-4 {
+    margin-left: 39px;
+}
+.key-container .top-row .key-group.group-5 {
+    margin-left: 38px;
+}
+.key-container .top-row .key {
+    margin-top: auto;
+}
+.key-container .bottom-row {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.key-container .bottom-row .key > div {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.key {
+    width: 27px;
+    font-weight: 900;
+    font-size: 14px;
+    line-height: 14px;
+    color: #333333;
+    text-align: center;
+    perspective: 200px;
+    user-select: none;
+}
+.key > div {
+    background-image: linear-gradient(-180deg, #e9d5d0 0%, #e6e5f2 98%);
+    box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.26);
+    border-radius: 3px;
+    width: 100%;
+    height: 100%;
+    padding: 8px 0;
+    box-sizing: border-box;
+}
+.key.pressed > div {
+    background-image: linear-gradient(-180deg, #e3c377 3%, #e1c190 98%);
+}
+
+.key.key-0 {
+    height: 188px;
+}
+.key.key-1 {
+    height: 183px;
+}
+.key.key-2 {
+    height: 178px;
+}
+.key.key-3 {
+    height: 173px;
+}
+.key.key-4 {
+    height: 168px;
+}
+.key.key-5 {
+    height: 163px;
+}
+.key.key-6 {
+    height: 158px;
+}
+.key.key-7 {
+    height: 153px;
+}
+.key.key-8 {
+    height: 148px;
+}
+.key.key-9 {
+    height: 143px;
+}
+.key.key-10 {
+    height: 138px;
+}
+.key.key-11 {
+    height: 133px;
+}
+.key.key-12 {
+    height: 128px;
+}
+.key.key-13 {
+    height: 123px;
+}
+.key.key-14 {
+    height: 118px;
+}
+.key.key-15 {
+    height: 113px;
+}
+.key.key-16 {
+    height: 108px;
+}
+.key.key-17 {
+    height: 103px;
+}
+.key.key-18 {
+    height: 98px;
+}
+
+.control {
+    background-color: #eee;
+    width: 300px;
+    padding: 40px;
+    border-radius: 5px;
+    box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.26);
+}
+
+.control ul {
+    list-style-type: none;
+}
+
+.control li {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.control label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.control input[type='range'] {
+    width: 200px;
+}
+
+.control input[type='number'] {
+    width: 50px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #ccc;
+}
+
+.control input[type='number']:focus {
+    border-bottom: 2px solid #000;
+    outline: none;
+}
+
+.github-corner:hover .octo-arm {
+    animation: octocat-wave 560ms ease-in-out;
+}
+@keyframes octocat-wave {
+    0%,
+    100% {
+        transform: rotate(0);
+    }
+    20%,
+    60% {
+        transform: rotate(-25deg);
+    }
+    40%,
+    80% {
+        transform: rotate(10deg);
+    }
+}
+@media (max-width: 500px) {
+    .github-corner:hover .octo-arm {
+        animation: none;
+    }
+    .github-corner .octo-arm {
+        animation: octocat-wave 560ms ease-in-out;
+    }
+}

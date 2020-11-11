@@ -76,7 +76,7 @@ async function setup() {
 
     const volume = document.getElementById('volume');
     synth.setVolume(volume.value);
-    volume.addEventListener('change', (e) => {
+    volume.addEventListener('input', (e) => {
         synth.setVolume(e.target.value);
     });
 
@@ -84,7 +84,7 @@ async function setup() {
     ['voices', 'stiffness', 'decay', 'material', 'position'].forEach((id) => {
         const input = document.getElementById(id);
         params[id] = input.value;
-        input.addEventListener('change', (e) => {
+        input.addEventListener('input', (e) => {
             params[id] = e.target.value;
             synth.setParams(params);
         });

@@ -68,6 +68,15 @@ function highlightKey(note) {
     }
 }
 
+function unhighlightKey(note) {
+    note = +note;
+    if (note in keys) {
+        const key = keys[note];
+        key.classList.remove('pressed');
+        clearTimeout(timers[note]);
+    }
+}
+
 async function setup() {
     await Tone.start();
 
@@ -95,20 +104,35 @@ async function setup() {
         synth.noteOn(+note, +velocity);
         highlightKey(+note - 12 * +octave.value);
     }
+    function noteOffMidi(note) {
+        unhighlightKey(+note - 12 * +octave.value);
+    }
 
     const octave = document.getElementById('octave');
     function noteOnScreen(note) {
         synth.noteOn(+note + 12 * +octave.value, 100);
         highlightKey(+note);
     }
+    function noteOffScreen(note) {
+        unhighlightKey(+note);
+    }
 
     for (const [note, key] of Object.entries(keys)) {
-        function handler(e) {
+        function downHandler(e) {
             e.preventDefault();
             noteOnScreen(note);
         }
-        key.addEventListener('mousedown', handler);
-        key.addEventListener('touchstart', handler);
+        key.addEventListener('mousedown', downHandler);
+        key.addEventListener('touchstart', downHandler);
+
+        function upHandler(e) {
+            e.preventDefault();
+            noteOffScreen(note);
+        }
+        key.addEventListener('mouseup', upHandler);
+        key.addEventListener('mouseleave', upHandler);
+        key.addEventListener('touchend', upHandler);
+
         key.addEventListener('mouseenter', (e) => {
             if (e.buttons !== 0) {
                 e.preventDefault();
@@ -117,6 +141,11 @@ async function setup() {
         });
     }
 
+    // prettier-ignore
+    const KEYS = [
+        'KeyA', 'KeyW', 'KeyS', 'KeyE', 'KeyD', 'KeyF', 'KeyT', 'KeyG',
+        'KeyY', 'KeyH', 'KeyU', 'KeyJ', 'KeyK', 'KeyO', 'KeyL'
+    ];
     document.addEventListener('keydown', (e) => {
         if (e.repeat || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) {
             return;
@@ -131,27 +160,17 @@ async function setup() {
                 return;
         }
 
-        const KEYS = [
-            'KeyA',
-            'KeyW',
-            'KeyS',
-            'KeyE',
-            'KeyD',
-            'KeyF',
-            'KeyT',
-            'KeyG',
-            'KeyY',
-            'KeyH',
-            'KeyU',
-            'KeyJ',
-            'KeyK',
-            'KeyO',
-            'KeyL',
-        ];
         const i = KEYS.indexOf(e.code);
         if (i !== -1) {
             e.preventDefault();
             noteOnScreen(i + 60);
+        }
+    });
+    document.addEventListener('keyup', (e) => {
+        const i = KEYS.indexOf(e.code);
+        if (i !== -1) {
+            e.preventDefault();
+            noteOffScreen(i + 60);
         }
     });
 
@@ -159,8 +178,17 @@ async function setup() {
         const msg = e.data[0] & 0xf0;
         const note = e.data[1];
         const velocity = e.data[2];
-        if (msg === 0x90 && velocity > 0) {
-            noteOnMidi(note, velocity);
+        switch (msg & 0xf0) {
+            case 0x90:
+                if (velocity > 0) {
+                    noteOnMidi(note, velocity);
+                } else {
+                    noteOffMidi(note);
+                }
+                break;
+            case 0x80:
+                noteOffMidi(note);
+                break;
         }
     }
 

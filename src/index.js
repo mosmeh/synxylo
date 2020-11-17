@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 import './style.css';
-import worklet from '-!url-loader!./worklet.js';
+import worklet from '-!url-loader?limit=false!./worklet';
 
 class Synth {
     constructor() {

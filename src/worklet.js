@@ -61,7 +61,6 @@ class ModeFilter {
 class Exciter {
     constructor() {
         this._filter = new StmLowpassFilter();
-        this._t = 0;
         this._amp = 0;
     }
     setStiffness(stiffness) {
@@ -71,11 +70,12 @@ class Exciter {
         this._filter.setParams(freq, 0.5);
     }
     strike(amp) {
-        this._t = 0;
         this._amp = amp;
     }
     process() {
-        return this._filter.process(this._t++ === 0 ? this._amp : 0);
+        const y = this._filter.process(this._amp);
+        this._amp = 0;
+        return y;
     }
 }
 
@@ -122,11 +122,11 @@ class Resonator {
 }
 
 class Voice {
-    constructor(note, velocity) {
+    constructor(note) {
+        this.note = note;
         this._freq = 440 * Math.pow(2, (note - 69) / 12);
         this._exciter = new Exciter();
         this._resonator = new Resonator();
-        this._exciter.strike(velocity / 127);
     }
     setParams(params) {
         this._exciter.setStiffness(params.stiffness);
@@ -134,6 +134,9 @@ class Voice {
             ...params,
             baseFreq: this._freq,
         });
+    }
+    strike(velocity) {
+        this._exciter.strike(velocity / 127);
     }
     process() {
         return this._resonator.process(this._exciter.process());
@@ -156,15 +159,27 @@ class Processor extends AudioWorkletProcessor {
                     this._voices.forEach((voice) =>
                         voice.setParams(this._params)
                     );
-                    break;
+                    return;
                 case 'noteOn':
-                    const voice = new Voice(data.note, data.velocity);
+                    const i = this._voices.findIndex(
+                        (voice) => voice.note === data.note
+                    );
+                    if (i >= 0) {
+                        const [voice] = this._voices.splice(i, 1);
+                        voice.strike(data.velocity);
+                        this._voices.push(voice);
+                        return;
+                    }
+
+                    const voice = new Voice(data.note);
                     voice.setParams(this._params);
+                    voice.strike(data.velocity);
                     this._voices.push(voice);
                     while (this._voices.length > this._params.voices) {
                         this._voices.shift();
                     }
-                    break;
+
+                    return;
             }
         };
     }

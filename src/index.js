@@ -130,13 +130,18 @@ async function setup() {
             noteOffScreen(note);
         }
         key.addEventListener('mouseup', upHandler);
-        key.addEventListener('mouseleave', upHandler);
         key.addEventListener('touchend', upHandler);
 
         key.addEventListener('mouseenter', (e) => {
             if (e.buttons !== 0) {
                 e.preventDefault();
                 noteOnScreen(note);
+            }
+        });
+        key.addEventListener('mouseleave', (e) => {
+            if (e.buttons !== 0) {
+                e.preventDefault();
+                noteOffScreen(note);
             }
         });
     }

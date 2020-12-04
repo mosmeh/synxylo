@@ -5,11 +5,13 @@ class StmLowpassFilter {
         this._state1 = this._state2 = 0;
         this._g = this._r = this._h = 0;
     }
+
     setParams(freq, resonance) {
         this._g = Math.tan(Math.PI * freq);
         this._r = 1 / resonance;
         this._h = 1 / (1 + this._r * this._g + this._g * this._g);
     }
+
     process(x) {
         const hp =
             (x -
@@ -33,6 +35,7 @@ class ModeFilter {
         this._a0 = this._a1 = this._a2 = this._d = 0;
         this._limit = sampleRate * (1 / Math.PI - 0.01);
     }
+
     setParams(freq, q) {
         const fq = Math.min(freq, this._limit);
         const alpha = sampleRate / (fq * 2 * Math.PI);
@@ -42,6 +45,7 @@ class ModeFilter {
         this._a1 = this._a0 * (1 - 2 * beta);
         this._a2 = this._a0 * (beta - this._d / q);
     }
+
     process(x) {
         const yn =
             this._a0 * this._xnm1 -
@@ -63,15 +67,18 @@ class Exciter {
         this._filter = new StmLowpassFilter();
         this._amp = 0;
     }
-    setStiffness(stiffness) {
+
+    set stiffness(value) {
         // stiffness := timbre
 
-        const freq = (32 * Math.pow(10, 2.7 * stiffness)) / sampleRate;
+        const freq = (32 * Math.pow(10, 2.7 * value)) / sampleRate;
         this._filter.setParams(freq, 0.5);
     }
+
     strike(amp) {
         this._amp = amp;
     }
+
     process() {
         const y = this._filter.process(this._amp);
         this._amp = 0;
@@ -91,6 +98,7 @@ class Resonator {
             this._amplitudes[i] = 1;
         }
     }
+
     setParams({ baseFreq, decay, material, position }) {
         // decay := damping
         // material := brightness
@@ -112,6 +120,7 @@ class Resonator {
                 (1 + Math.cos(2 * Math.PI * position * k)) / 2;
         }
     }
+
     process(x) {
         let y = 0;
         for (let i = 0; i < MODAL_FREQ_RATIOS.length; ++i) {
@@ -128,16 +137,19 @@ class Voice {
         this._exciter = new Exciter();
         this._resonator = new Resonator();
     }
+
     setParams(params) {
-        this._exciter.setStiffness(params.stiffness);
+        this._exciter.stiffness = params.stiffness;
         this._resonator.setParams({
             ...params,
             baseFreq: this._freq,
         });
     }
+
     strike(velocity) {
         this._exciter.strike(velocity / 127);
     }
+
     process() {
         return this._resonator.process(this._exciter.process());
     }
@@ -151,7 +163,7 @@ class Processor extends AudioWorkletProcessor {
         this.port.onmessage = (e) => {
             const { data } = e;
             switch (data.type) {
-                case 'setParams':
+                case 'params':
                     this._params = data.params;
                     while (this._voices.length > this._params.voices) {
                         this._voices.shift();
@@ -183,6 +195,7 @@ class Processor extends AudioWorkletProcessor {
             }
         };
     }
+
     process(_, outputs) {
         const out = outputs[0][0];
         for (let i = 0; i < out.length; ++i) {

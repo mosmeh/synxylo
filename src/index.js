@@ -33,9 +33,9 @@ class Synth {
         this._gain.gain.value = volume;
     }
 
-    setParams(params) {
+    setWorkletParams(params) {
         this._port.postMessage({
-            type: 'setParams',
+            type: 'params',
             params,
         });
     }
@@ -84,21 +84,21 @@ async function setup() {
     await synth.setup();
 
     const volume = document.getElementById('volume');
-    synth.setVolume(volume.value);
     volume.addEventListener('input', (e) => {
         synth.setVolume(e.target.value);
     });
+    synth.setVolume(volume.value);
 
     const params = {};
     ['voices', 'stiffness', 'decay', 'material', 'position'].forEach((id) => {
         const input = document.getElementById(id);
-        params[id] = input.value;
         input.addEventListener('input', (e) => {
             params[id] = e.target.value;
-            synth.setParams(params);
+            synth.setWorkletParams(params);
         });
+        params[id] = input.value;
     });
-    synth.setParams(params);
+    synth.setWorkletParams(params);
 
     function noteOnMidi(note, velocity) {
         synth.noteOn(+note, +velocity);
